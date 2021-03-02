@@ -1,0 +1,64 @@
+
+
+===================================================
+저장 시간: 2021-03-02 오후 3:04:56 화요일
+===================================================
+// source.cpp
+
+// STL DAY-1
+// Build settings : x86, Release
+
+#include "save.h"
+
+int main()
+{
+	Save( "source.cpp" );
+	Save( "save.h" );
+
+	return 0;
+}
+
+// 추가 학습
+// file text mode, binary mode
+
+===================================================
+저장 시간: 2021-03-02 오후 3:04:56 화요일
+===================================================
+// save.h
+
+#pragma once
+
+#include <ctime>
+
+#include <iostream>
+#include <string_view>
+#include <filesystem>
+#include <fstream>
+
+using namespace std;
+
+void Save( string_view fileName )
+{
+	// 어떤 파일을 저장하는지 화면에 출력한다 - 파일 이름과 크기
+	cout << "저장: " << fileName << " " << ", 크기: " << filesystem::file_size( fileName ) << " Byte" << endl;
+
+	ofstream out( "../강의록.txt", ios::app );
+	ifstream in( fileName );
+
+	out << endl << endl;
+
+	// 파일을 기록한 시간도 쓴다.
+	time_t t = time( nullptr );
+	out.imbue( locale( "korean" ) );
+	out << "===================================================" << endl;
+	out << "저장 시간: " << put_time( localtime( &t ), "%c %A" ) << endl;
+	out << "===================================================" << endl;
+
+	// 파일의 끝(-1, EOF). char로는 표현할 수 없기에 int
+	int c;
+	while( (c = in.get()) != EOF )
+		out.put( c );
+
+	// out과 in은 스택 변수이기에 알아서 정리됨
+	// RAII Resource Acquisition Is Initialization
+}
