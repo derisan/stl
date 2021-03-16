@@ -42,10 +42,25 @@ int main()
 	//ofstream out( "int 100개.txt" );
 	//out.write( (char*)a, 100 * sizeof( int ) );
 
-	int a[100];
+
+	// 100 ~ 199 까지의 숫자를 파일에 저장하기
+	vector<int> a( 100 );
 	iota( begin( a ), end( a ), 1 );
 	ofstream out( "int 100개.txt", ios::binary );
 	copy( begin( a ), end( a ), ostream_iterator<int>( out, " " ) );
+
+	// 100 ~199 까지의 숫자가 써져 있는 파일 읽어들이기
+	//vector<int> v;
+	//v.reserve( 100 );
+	//ifstream in( "int 100개.txt" );
+	//if( !in.is_open() )
+	//{
+	//	cout << "Failed to open file" << endl;
+	//	return 0;
+	//}
+	//copy( istream_iterator<int>( in ), istream_iterator<int>(), back_inserter( v ) );
+	//for( auto n : v )
+	//	cout << n << endl;
 
 
 	//ifstream in( "오름차순정렬한 int 100개.txt"s );
