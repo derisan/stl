@@ -71,7 +71,7 @@ public:
 	// 복사할당연산자
 	String& operator=( const String& other ) {
 		if( this != &other ) {
-			this->~String();
+			delete[] p;
 			num = other.num;
 			p = new char[num];
 			memcpy( p, other.p, num );
@@ -100,7 +100,7 @@ public:
 	// 이동할당연산자
 	String& operator=( String&& other ) noexcept {
 		if( this != &other ) {
-			this->~String();
+			delete[] p;
 			num = other.num;
 			p = other.p;
 
