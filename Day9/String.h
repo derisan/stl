@@ -8,18 +8,27 @@
 #include <iostream>
 #include <random>
 #include <cstring>
+#include <algorithm>
+#include <string>
 
 using std::cout;
 using std::endl;
 
 #define 관찰
 
-std::default_random_engine dre;
+std::default_random_engine dre{ std::random_device{}() };
 std::uniform_int_distribution<> uidAlpha{ 'a', 'z' };
 
 class String {
 public:
-	explicit String( size_t n ) : num{ n }, p{ new char[num] } {
+	String() {
+#ifdef 관찰
+		cout << "생성자() (this:" << this << ") - 갯수: "
+			<< num << ", 위치:" << (void*)p << endl;
+#endif
+	}
+
+	String( size_t n ) : num{ n }, p{ new char[num] } {
 #ifdef 관찰
 		cout << "생성자(int) (this:" << this << ") - 갯수: "
 			<< num << ", 위치:" << (void*)p << endl;
@@ -110,10 +119,25 @@ public:
 	size_t size() const {
 		return num;
 	}
+	
+	// [1] operator< 정의를 통한 String 클래스의 사전순 비교!!
+	//bool operator<( const String& other ) const
+	//{
+	//	return std::lexicographical_compare( begin(), end(), other.begin(), other.end() );
+	//}
+
+	//char* begin() { return p; }
+	//char* end() { return p + num; }
+
+	//const char* begin() const { return p; }
+	//const char* end() const { return p + num; }
+
+	// [2]
+	std::string getString() const { return std::string{ p }; }
 
 private:
-	size_t num;							// 확보한 자원의 수
-	char* p;							// 확보한 자원의 위치
+	size_t num{ 0 };							// 확보한 자원의 수
+	char* p{ nullptr };							// 확보한 자원의 위치
 
 	friend std::ostream& operator<<( std::ostream&, const String& );
 };
