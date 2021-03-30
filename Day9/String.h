@@ -19,7 +19,7 @@ std::uniform_int_distribution<> uidAlpha{ 'a', 'z' };
 
 class String {
 public:
-	String( size_t n ) : num{ n }, p{ new char[num] } {
+	explicit String( size_t n ) : num{ n }, p{ new char[num] } {
 #ifdef 包蔓
 		cout << "积己磊(int) (this:" << this << ") - 肮荐: "
 			<< num << ", 困摹:" << (void*)p << endl;
@@ -29,11 +29,11 @@ public:
 			p[i] = uidAlpha( dre );
 	}
 
-	String( const char* s )
-		: num{ strlen( s ) }
+	String( const char* p )
+		: num{ strlen( p ) }
 		, p{ new char[num] }
 	{
-		memcpy( p, s, num );
+		memcpy( this->p, p, num );
 
 #ifdef 包蔓
 		cout << "积己磊(const char*) (this:" << this << ") - 肮荐: "
