@@ -10,6 +10,7 @@
 #include <cstring>
 #include <algorithm>
 #include <string>
+#include <iterator>
 
 using std::cout;
 using std::endl;
@@ -20,8 +21,148 @@ using std::endl;
 std::default_random_engine dre{ std::random_device{}() };
 std::uniform_int_distribution<> uidAlpha{ 'a', 'z' };
 
+/**
+* String이 외부에 제공하는 반복자
+* 
+*/
+class String_Iterator
+{
+public:
+	using value_type = char;
+
+	String_Iterator() = default;
+
+	String_Iterator(char* p) : p{p} {}
+
+	char& operator*() { return *p; }
+
+	const char& operator*() const { return *p; }
+
+	char* get() { return p; }
+
+	String_Iterator& operator++()
+	{
+		++p;
+		return *this;
+	}
+
+	String_Iterator operator++(int)
+	{
+		auto ret = *this;
+		++(*this);
+
+		return ret;
+	}
+
+	String_Iterator& operator--()
+	{
+		--p;
+		return *this;
+	}
+
+	String_Iterator operator--(int)
+	{
+		auto ret = *this;
+		--(*this);
+
+		return ret;
+	}
+
+
+	friend bool operator==(const String_Iterator& lhs, const String_Iterator& rhs)
+	{
+		return lhs.p == rhs.p;
+	}
+
+	friend bool operator!=(const String_Iterator& lhs, const String_Iterator& rhs)
+	{
+		return lhs.p != rhs.p;
+	}
+
+	int operator-(const String_Iterator& rhs) const
+	{
+		return p - rhs.p;
+	}
+
+	String_Iterator operator-(int n) const
+	{
+		return String_Iterator{p + n};
+	}
+
+	String_Iterator operator+(int n) const
+	{
+		return String_Iterator{p + n};
+	}
+
+	bool operator<(const String_Iterator& rhs) const
+	{
+		return p < rhs.p;
+	}
+
+private:
+
+	char* p{nullptr};
+};
+
+class String_Reverse_Iterator
+{
+public:
+
+	String_Reverse_Iterator(char* p) : p{p} {}
+
+	char& operator*() { return *(p - 1); }
+
+	String_Reverse_Iterator& operator++()
+	{
+		--p;
+		return *this;
+	}
+
+	String_Reverse_Iterator operator++(int)
+	{
+		auto ret = *this;
+		--(*this);
+
+		return ret;
+	}
+
+	String_Reverse_Iterator& operator--()
+	{
+		++p;
+		return *this;
+	}
+
+	String_Reverse_Iterator operator--(int)
+	{
+		auto ret = *this;
+		++(*this);
+
+		return ret;
+	}
+
+
+	friend bool operator==(const String_Reverse_Iterator& left, const String_Reverse_Iterator& right)
+	{
+		return left.p == right.p;
+	}
+
+	friend bool operator!=(const String_Reverse_Iterator& left, const String_Reverse_Iterator& right)
+	{
+		return left.p != right.p;
+	}
+
+
+private:
+
+	char* p{nullptr};
+};
+
+
 class String {
 public:
+	using iterator = String_Iterator;
+	using reverse_iterator = String_Reverse_Iterator;
+
 	String() {
 #ifdef 관찰
 		cout << "생성자() (this:" << this << ") - 갯수: "
@@ -122,6 +263,32 @@ public:
 	}
 	
 	std::string getString() const { return std::string{ p }; }
+
+	iterator begin() { return iterator{ p }; }
+	iterator begin() const { return iterator{ p }; }
+	iterator end() { return iterator{ p + num }; }
+	iterator end() const { return iterator{ p + num }; }
+
+	reverse_iterator rbegin() { return reverse_iterator{p + num}; }
+	reverse_iterator rbegin() const { return reverse_iterator{p + num}; }
+	reverse_iterator rend() { return reverse_iterator{p}; }
+	reverse_iterator rend() const { return reverse_iterator{p}; }
+
+
+	bool operator==(const String& rhs) const
+	{
+		if(num != rhs.num)
+			return false;
+
+		for(int i = 0; i < num; ++i)
+		{
+			if(p[i] != rhs.p[i])
+				return false;
+		}
+
+		return true;
+	}
+
 
 private:
 	size_t num{ 0 };							// 확보한 자원의 수
