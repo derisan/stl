@@ -26,6 +26,7 @@ std::uniform_int_distribution<> uidAlpha{ 'a', 'z' };
 * 
 */
 class String_Iterator
+	//: public std::iterator<std::random_access_iterator_tag, char>
 {
 public:
 	using value_type = char;
@@ -289,12 +290,29 @@ public:
 		return true;
 	}
 
+	void MakeFromString(const std::string& s)
+	{
+		num = s.size();
+
+		if(p)
+		{
+			delete[] p;
+		}
+
+		p = new char[num];
+
+		for(int i = 0; i < s.size(); ++i)
+		{
+			p[i] = s[i];
+		}
+	}
 
 private:
 	size_t num{ 0 };							// 확보한 자원의 수
 	char* p{ nullptr };							// 확보한 자원의 위치
 
 	friend std::ostream& operator<<( std::ostream&, const String& );
+	friend std::istream& operator>>(std::istream&, String&);
 };
 
 std::ostream& operator<<( std::ostream& os, const String& s )
@@ -302,4 +320,12 @@ std::ostream& operator<<( std::ostream& os, const String& s )
 	for( size_t i = 0; i < s.num; ++i )
 		os << s.p[i];
 	return os;
+}
+
+std::istream& operator>>(std::istream& is, String& s)
+{
+	std::string str;
+	is >> str;
+	s.MakeFromString(str);
+	return is;
 }
