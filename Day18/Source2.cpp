@@ -28,12 +28,14 @@ int my_count_if(Iter first, Iter last, fn p)
 }
 
 template<class Iter>
-int my_distance(Iter first, Iter last)
+ptrdiff_t my_distance(Iter first, Iter last)
 {
-	if(contiguous_iterator<Iter>)
+	// if constexpr --> 선택적 컴파일
+	if constexpr (contiguous_iterator<Iter>)
 	{
 		return last - first;
 	}
+	
 	else
 	{
 		int dist = 0;
@@ -58,9 +60,6 @@ int main()
 
 	vector<String> v{istream_iterator<String>{in}, {}};
 
-	auto dd = my_distance(v.begin(), v.end());
-	cout << dd << endl;
-
 	auto cnt = my_count_if(v.begin(), v.end(), [](const String& s)
 						   {
 							   if(s.size() <= 4)
@@ -75,6 +74,10 @@ int main()
 
 
 	list<int> l{1,2,3,4,5};
-	auto dist = distance(l.begin(), l.end());
+	auto dist = my_distance(l.begin(), l.end()); // list의 반복자는 operator-를 오버로딩하지 않았기에 오류.
+	cout << "거리: " << dist << endl;
+
+	vector<int> v{1,2,3};
+	dist = my_distance(v.end(), v.begin());
 	cout << "거리: " << dist << endl;
 }

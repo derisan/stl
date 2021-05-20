@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <string>
 #include <iterator>
+#include <functional>
 
 using std::cout;
 using std::endl;
@@ -18,7 +19,7 @@ using std::endl;
 #define 관찰
 #undef 관찰
 
-std::default_random_engine dre{ std::random_device{}() };
+extern std::default_random_engine dre{ std::random_device{}() };
 std::uniform_int_distribution<> uidAlpha{ 'a', 'z' };
 
 /**
@@ -171,7 +172,7 @@ public:
 #endif
 	}
 
-	String( size_t n ) : num{ n }, p{ new char[num] } {
+	/*explicit*/String( size_t n ) : num{ n }, p{ new char[num] } {
 #ifdef 관찰
 		cout << "생성자(int) (this:" << this << ") - 갯수: "
 			<< num << ", 위치:" << (void*)p << endl;
@@ -281,7 +282,7 @@ public:
 		if(num != rhs.num)
 			return false;
 
-		for(int i = 0; i < num; ++i)
+		for(size_t i = 0; i < num; ++i)
 		{
 			if(p[i] != rhs.p[i])
 				return false;
@@ -301,11 +302,15 @@ public:
 
 		p = new char[num];
 
-		for(int i = 0; i < s.size(); ++i)
+		for(size_t i = 0; i < s.size(); ++i)
 		{
 			p[i] = s[i];
 		}
 	}
+
+	// For KeyCompare in std::set
+	friend bool operator<(const String& lhs, const String& rhs);
+
 
 private:
 	size_t num{ 0 };							// 확보한 자원의 수
@@ -329,3 +334,19 @@ std::istream& operator>>(std::istream& is, String& s)
 	s.MakeFromString(str);
 	return is;
 }
+
+bool operator<(const String& lhs, const String& rhs)
+{
+	//return std::lexicographical_compare(lhs.p, lhs.p + lhs.num, rhs.p, rhs.p + rhs.num);
+	return lhs.size() < rhs.size();
+}
+
+// 클래스 String을 위한 hash 템플릿 특수화
+template<>
+struct std::hash<String>
+{
+	size_t operator()(const String& s) const
+	{
+		return std::hash<string>()(s.getString());
+	}
+};
