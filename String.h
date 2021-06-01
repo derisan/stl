@@ -276,9 +276,11 @@ public:
 	reverse_iterator rend() { return reverse_iterator{p}; }
 	reverse_iterator rend() const { return reverse_iterator{p}; }
 
-
+	static int CountOperatorCall;
 	bool operator==(const String& rhs) const
 	{
+		++CountOperatorCall;
+
 		if(num != rhs.num)
 			return false;
 
@@ -350,3 +352,5 @@ struct std::hash<String>
 		return std::hash<string>()(s.getString());
 	}
 };
+
+int String::CountOperatorCall = 0;
